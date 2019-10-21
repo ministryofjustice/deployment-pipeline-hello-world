@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   gradle: circleci/gradle@1.0.11
+  docker: circleci/docker@x.y.z
 
 workflows:
   checkout-build-test:
@@ -13,5 +14,10 @@ workflows:
     jobs:
       - gradle/run:
           command: build -x test
+  build-docker-image-only:
+    jobs:
+      - docker/publish:
+          deploy: false
+          image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
 
 jobs:
