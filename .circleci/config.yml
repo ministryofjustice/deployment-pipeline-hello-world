@@ -13,3 +13,5 @@ workflows:
     jobs:
       - gradle/run:
           command: build -x test
+
+jobs:
