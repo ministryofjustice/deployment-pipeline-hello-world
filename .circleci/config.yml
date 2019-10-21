@@ -10,8 +10,13 @@ workflows:
       - gradle/test:
           test_results_path: build/reports/tests
           reports_path: build/reports/
+  checkout-run_task:
+    jobs:
       - gradle/run:
           command: build -x test
+  build-docker-image-only:
+    requires: checkout-build-test
+    jobs:
       - docker/publish:
           deploy: false
           image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
