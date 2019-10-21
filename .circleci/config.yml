@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   gradle: circleci/gradle@1.0.11
-  docker: circleci/docker@x.y.z
+  docker: circleci/docker@0.5.13
 
 workflows:
   checkout-build-test:
