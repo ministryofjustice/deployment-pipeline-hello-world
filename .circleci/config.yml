@@ -17,7 +17,8 @@ workflows:
 
 jobs:
   build_jar:
-    executor: docker/machine
+    docker:
+      image: circleci/openjdk:8
     steps:
       - checkout
       - gradle/with_cache:
@@ -28,10 +29,11 @@ jobs:
             - persist_to_workspace:
                 root: "~"
                 paths:
-                  - build/libs/gs-spring-boot-0.1.0.jar
+                  - project/build/libs/gs-spring-boot-0.1.0.jar
 
   build_docker_image:
-    executor: docker/machine
+    docker:
+      image: circleci/buster
     steps:
       - checkout
       - attach_workspace:
