@@ -10,12 +10,33 @@ workflows:
       - gradle/test:
           test_results_path: build/reports/tests
           reports_path: build/reports/
-      - gradle/run:
-          command: build -x test
-      - docker/publish:
-          requires:
-            - gradle/test
-          deploy: false
-          image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+      - build_jar
+      - build_docker_image
 
 jobs:
+  build_jar:
+    executor: docker/machine
+    steps:
+      - checkout
+      - gradle/with_cache:
+          steps:
+            - run:
+                name: Run Task
+                command: ./gradlew build -x test
+            - persist_to_workspace:
+                root: "~"
+                paths:
+                  - build/libs/gs-spring-boot-0.1.0.jar
+
+  build_docker_image:
+    executor: docker/machine
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /tmp/workspace
+      - run:
+          name: Copy build artifacts from workspace
+          command: cp /tmp/workspace/build .
+      - docker/check
+      - docker/build:
+          image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
