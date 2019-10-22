@@ -11,7 +11,9 @@ workflows:
           test_results_path: build/reports/tests
           reports_path: build/reports/
       - build_jar
-      - build_docker_image
+      - build_docker_image:
+          requires:
+            - build_jar
 
 jobs:
   build_jar:
