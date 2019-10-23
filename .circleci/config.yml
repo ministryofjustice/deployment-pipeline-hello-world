@@ -32,8 +32,7 @@ jobs:
                   - project/build/libs/gs-spring-boot-0.1.0.jar
 
   build_docker_image:
-    docker:
-      - image: circleci/openjdk:8
+    executor: docker/machine
     steps:
       - checkout
       - attach_workspace:
