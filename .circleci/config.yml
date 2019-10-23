@@ -33,7 +33,7 @@ jobs:
 
   build_docker_image:
     docker:
-      - image: circleci/buster
+      - image: circleci/openjdk:8
     steps:
       - checkout
       - attach_workspace:
