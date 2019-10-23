@@ -18,7 +18,7 @@ workflows:
 jobs:
   build_jar:
     docker:
-      image: circleci/openjdk:8
+      - image: circleci/openjdk:8
     steps:
       - checkout
       - gradle/with_cache:
@@ -33,7 +33,7 @@ jobs:
 
   build_docker_image:
     docker:
-      image: circleci/buster
+      - image: circleci/buster
     steps:
       - checkout
       - attach_workspace:
