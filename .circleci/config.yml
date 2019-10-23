@@ -41,6 +41,5 @@ jobs:
       - run:
           name: Copy build artifacts from workspace
           command: cp -r /tmp/workspace/project/build /home/circleci/project/
-      - docker/check
       - docker/build:
           image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
