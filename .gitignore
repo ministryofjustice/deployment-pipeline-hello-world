@@ -30,3 +30,11 @@ build/
 
 # IntelliJ Idea
 .idea
+
+# Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
