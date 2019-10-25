@@ -19,6 +19,7 @@ orbs:
 workflows:
   checkout-build-test:
     jobs:
+      - lint_and_apply_terraform
       - gradle/test:
           test_results_path: build/reports/tests
           reports_path: build/reports/
@@ -26,6 +27,7 @@ workflows:
       - build_docker_image:
           requires:
             - build_jar
+            - lint_and_apply_terraform
 
 jobs:
   build_jar:
@@ -77,3 +79,4 @@ jobs:
             cd ~/project/terraform/
             terraform init -lock-timeout=300s
             terraform validate
+            terraform plan
