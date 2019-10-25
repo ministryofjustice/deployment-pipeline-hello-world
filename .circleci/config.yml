@@ -61,3 +61,19 @@ jobs:
           command: |
             docker push 902837325998.dkr.ecr.eu-west-2.amazonaws.com/laa-ccms-deployment-spike
 
+
+  lint_and_apply_terraform:
+    #
+    # Lint the Terraform
+    #
+    docker:
+      - image: hashicorp/terraform
+    steps:
+      - checkout
+      - run:
+          name: Lint Terraform
+          command: |
+            terraform --version
+            cd ~/project/terraform/
+            terraform init -lock-timeout=300s
+            terraform validate
