@@ -19,12 +19,16 @@ orbs:
 workflows:
   checkout-build-test:
     jobs:
-      - validate_and_plan_terraform
+#      - validate_and_plan_terraform
+      - plan_destroy_terraform
       - approve_terraform:
           type: approval
           requires:
-            - validate_and_plan_terraform
-      - apply_terraform:
+            - plan_destroy_terraform
+#      - apply_terraform:
+#          requires:
+#            - approve_terraform
+      - destroy_terraform:
           requires:
             - approve_terraform
       - gradle/test:
@@ -34,7 +38,7 @@ workflows:
       - build_docker_image:
           requires:
             - build_jar
-            - validate_and_plan_terraform
+#            - validate_and_plan_terraform
 
 jobs:
   build_jar:
@@ -96,3 +100,29 @@ jobs:
               cd ~/project/terraform/
               terraform init -lock-timeout=300s
               terraform apply -lock-timeout=300s --auto-approve
+
+
+  plan_destroy_terraform:
+    docker:
+      - image: hashicorp/terraform
+    steps:
+      - checkout
+      - run:
+          name: Validate and plan terraform
+          command: |
+            terraform --version
+            cd ~/project/terraform/
+            terraform init -lock-timeout=300s
+            terraform plan -destroy
+
+  destroy_terraform:
+    docker:
+      - image: hashicorp/terraform
+    steps:
+      - checkout
+      - run:
+          name: Delete terraform
+          command: |
+            cd ~/project/terraform/
+            terraform init -lock-timeout=300s
+            terraform destroy --auto-approve
