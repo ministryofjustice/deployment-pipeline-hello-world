@@ -57,6 +57,12 @@ variable "fargate_memory" {
   default     = "512"
 }
 
+variable "vpc_id" {
+  description = "VPC ID - will need to vary per environment/account"
+  default     = "vpc-86e0dfef"
+  // development
+}
+
 locals {
   service = "hello-world"
 

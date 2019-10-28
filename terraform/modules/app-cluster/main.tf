@@ -50,6 +50,9 @@ resource "aws_ecs_service" "main" {
   launch_type     = "FARGATE"
 
   network_configuration {
+    security_groups = [
+      aws_security_group.ecs_tasks.id,
+    ]
     subnets = [
       data.aws_cloudformation_stack.landing_zone.outputs["AppPrivateSubnetA"],
       data.aws_cloudformation_stack.landing_zone.outputs["AppPrivateSubnetB"],
