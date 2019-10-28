@@ -29,3 +29,12 @@ resource "aws_ecr_repository" "ccms_deployment_spike" {
   name = "laa-ccms-deployment-spike"
   provider = aws.shared-services
 }
+
+module "cluster" {
+  source = "./modules/app-cluster"
+  region = var.region
+  providers = { # Assumes the role in the development account
+    aws = "aws"
+  }
+  app_image = "${aws_ecr_repository.ccms_deployment_spike.repository_url}:latest"
+}
