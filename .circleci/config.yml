@@ -19,6 +19,14 @@ orbs:
 workflows:
   checkout-build-test:
     jobs:
+      - validate_and_plan_terraform
+      - approve_terraform:
+          type: approval
+          requires:
+            - validate_and_plan_terraform
+      - apply_terraform:
+          requires:
+            - approve_terraform
       - gradle/test:
           test_results_path: build/reports/tests
           reports_path: build/reports/
@@ -26,6 +34,7 @@ workflows:
       - build_docker_image:
           requires:
             - build_jar
+            - validate_and_plan_terraform
 
 jobs:
   build_jar:
@@ -61,3 +70,29 @@ jobs:
           command: |
             docker push 902837325998.dkr.ecr.eu-west-2.amazonaws.com/laa-ccms-deployment-spike
 
+
+  validate_and_plan_terraform:
+    docker:
+      - image: hashicorp/terraform
+    steps:
+      - checkout
+      - run:
+          name: Validate and plan terraform
+          command: |
+            terraform --version
+            cd ~/project/terraform/
+            terraform init -lock-timeout=300s
+            terraform validate
+            terraform plan
+
+  apply_terraform:
+      docker:
+        - image: hashicorp/terraform
+      steps:
+        - checkout
+        - run:
+            name: Apply terraform
+            command: |
+              cd ~/project/terraform/
+              terraform init -lock-timeout=300s
+              terraform apply -lock-timeout=300s --auto-approve
