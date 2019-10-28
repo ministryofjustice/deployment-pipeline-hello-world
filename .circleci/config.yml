@@ -34,7 +34,7 @@ workflows:
       - build_docker_image:
           requires:
             - build_jar
-            - validate_and_plan_terraform
+            - apply_terraform
 
 jobs:
   build_jar:
