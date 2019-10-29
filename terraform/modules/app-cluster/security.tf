@@ -61,5 +61,15 @@ resource "aws_security_group" "ecs_tasks" {
     ]
   }
 
+  // Allow access from the workspace whilst we don't have an ALB
+    ingress {
+    protocol  = "tcp"
+    from_port = var.app_port
+    to_port   = var.app_port
+    cidr_blocks = [
+      "10.200.0.0/20",
+    ]
+  }
+
   //tags = local.default_tags
 }
