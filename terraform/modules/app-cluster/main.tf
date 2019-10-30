@@ -43,7 +43,7 @@ resource "aws_ecs_task_definition" "app" {
 
 # This ensures we have the required number of containers running
 resource "aws_ecs_service" "main" {
-  name            = "hello-world"
+  name            = local.service
   cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.app.arn
   desired_count   = var.app_count
@@ -63,7 +63,7 @@ resource "aws_ecs_service" "main" {
 
   load_balancer {
     target_group_arn = aws_alb_target_group.app.id
-    container_name   = "hello-world"
+    container_name   = local.service
     container_port   = var.app_port
   }
 
