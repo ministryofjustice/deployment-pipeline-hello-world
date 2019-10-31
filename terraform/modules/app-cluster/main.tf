@@ -38,12 +38,12 @@ resource "aws_ecs_task_definition" "app" {
   memory                = var.fargate_memory
   container_definitions = data.template_file.hello_world_app.rendered
 
-//  tags = local.default_tags
+  //tags = local.default_tags
 }
 
 # This ensures we have the required number of containers running
 resource "aws_ecs_service" "main" {
-  name            = "hello-world"
+  name            = local.service
   cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.app.arn
   desired_count   = var.app_count
@@ -61,7 +61,14 @@ resource "aws_ecs_service" "main" {
     assign_public_ip = true
   }
 
+  load_balancer {
+    target_group_arn = aws_alb_target_group.app.id
+    container_name   = local.service
+    container_port   = var.app_port
+  }
+
   depends_on = [
+    aws_alb_listener.front_end,
     aws_iam_role_policy_attachment.ecs_task_execution_role,
   ]
 
