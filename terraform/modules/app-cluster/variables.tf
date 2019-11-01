@@ -9,12 +9,12 @@ variable "environment" {
 
 variable "ecs_task_execution_role_name" {
   description = "ECS task execution role name"
-  default     = "providerDetailsTaskExecutionRole"
+  default     = "helloWorldTaskExecutionRole"
 }
 
 variable "ecs_auto_scale_role_name" {
   description = "ECS auto scale role Name"
-  default     = "providerDetailsAutoScaleRole"
+  default     = "helloWorldAutoScaleRole"
 }
 
 variable "az_count" {
