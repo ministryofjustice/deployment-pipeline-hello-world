@@ -28,8 +28,10 @@ workflows:
       - build_docker_image:
           requires:
             - build_jar
+      - ignore_ecr_repo
       - validate_and_plan_terraform:
           requires:
+            - ignore_ecr_repo
             - build_docker_image
       - approve_terraform:
           type: approval
@@ -125,3 +127,14 @@ jobs:
             cd ~/project/terraform/
             terraform init -lock-timeout=300s
             terraform destroy --auto-approve
+
+  ignore_ecr_repo:
+    docker:
+      - image: hashicorp/terraform
+    steps:
+      - checkout
+      - run:
+          command: |
+            cd ~/project/terraform/
+            terraform init -lock-timeout=300s
+            terraform state rm 'aws_ecr_repository.ccms_deployment_spike'
