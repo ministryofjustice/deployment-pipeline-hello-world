@@ -19,6 +19,7 @@ orbs:
 workflows:
   checkout-build-test:
     jobs:
+      - destroy_terraform
       - gradle/test:
           test_results_path: build/reports/tests
           reports_path: build/reports/
@@ -28,10 +29,9 @@ workflows:
       - build_docker_image:
           requires:
             - build_jar
-      - ignore_ecr_repo
       - validate_and_plan_terraform:
           requires:
-            - ignore_ecr_repo
+            - destroy_terraform
             - build_docker_image
       - approve_terraform:
           type: approval
@@ -87,6 +87,8 @@ jobs:
             terraform --version
             cd ~/project/terraform/
             terraform init -lock-timeout=300s
+            export TF_WORKSPACE=development
+
             terraform validate
             terraform plan
 
@@ -100,9 +102,12 @@ jobs:
             command: |
               cd ~/project/terraform/
               terraform init -lock-timeout=300s
+              export TF_WORKSPACE=development
+
               terraform apply -lock-timeout=300s --auto-approve
 
 
+  # Not used
   plan_destroy_terraform:
     docker:
       - image: hashicorp/terraform
@@ -127,14 +132,3 @@ jobs:
             cd ~/project/terraform/
             terraform init -lock-timeout=300s
             terraform destroy --auto-approve
-
-  ignore_ecr_repo:
-    docker:
-      - image: hashicorp/terraform
-    steps:
-      - checkout
-      - run:
-          command: |
-            cd ~/project/terraform/
-            terraform init -lock-timeout=300s
-            terraform state rm 'aws_ecr_repository.ccms_deployment_spike'
