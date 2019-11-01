@@ -19,14 +19,6 @@ orbs:
 workflows:
   checkout-build-test:
     jobs:
-      - validate_and_plan_terraform
-      - approve_terraform:
-          type: approval
-          requires:
-            - validate_and_plan_terraform
-      - apply_terraform:
-          requires:
-            - approve_terraform
       - gradle/test:
           test_results_path: build/reports/tests
           reports_path: build/reports/
@@ -36,7 +28,16 @@ workflows:
       - build_docker_image:
           requires:
             - build_jar
-            - apply_terraform
+      - validate_and_plan_terraform:
+          requires:
+            - build_docker_image
+      - approve_terraform:
+          type: approval
+          requires:
+            - validate_and_plan_terraform
+      - apply_terraform:
+          requires:
+            - approve_terraform
 
 jobs:
   build_jar:
