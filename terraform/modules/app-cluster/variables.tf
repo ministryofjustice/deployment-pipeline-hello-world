@@ -2,11 +2,6 @@ variable "region" {
   default = "eu-west-2"
 }
 
-variable "environment" {
-  description = "environment/account"
-  default     = "development"
-}
-
 variable "ecs_task_execution_role_name" {
   description = "ECS task execution role name"
   default     = "helloWorldTaskExecutionRole"
@@ -59,8 +54,11 @@ variable "fargate_memory" {
 
 variable "vpc_id" {
   description = "VPC ID - will need to vary per environment/account"
-  default     = "vpc-86e0dfef"
   // development
+}
+
+variable "certificate_arn" {
+  description = "The certificate for the ALB Listener"
 }
 
 locals {
@@ -70,7 +68,7 @@ locals {
     business-unit = "LAA"
     application   = "Deployment Pipeline Hello World"
     // TODO: this should vary per environment
-    environment-name       = "development"
+    environment-name       = "${terraform.workspace}"
     owner                  = "laa-role-sre@digital.justice.gov.uk"
     infrastructure-support = "LAA WebOps: laa-role-sre@digital.justice.gov.uk"
     // TODO: this should vary per environment

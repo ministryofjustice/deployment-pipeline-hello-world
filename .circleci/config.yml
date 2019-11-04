@@ -15,6 +15,54 @@ orbs:
                 export AWS_SECRET_ACCESS_KEY=$(echo $temp_role | jq .Credentials.SecretAccessKey | xargs)
                 export AWS_SESSION_TOKEN=$(echo $temp_role | jq .Credentials.SessionToken | xargs)
                 eval $(aws ecr get-login --no-include-email --region=eu-west-2)
+    executors:
+      terraform:
+        docker: [image: hashicorp/terraform]
+    jobs:
+      validate_and_plan_terraform:
+        executor: terraform
+        parameters:
+          workspace:
+            description: Terraform workspace name
+            type: string
+            default: development
+        environment:
+          TF_WORKSPACE: "<<parameters.workspace>>"
+        steps:
+          - checkout
+          - run:
+              name: Plan Environment Terraform
+              command: |
+                export SHORT_HASH=${CIRCLE_SHA1:0:7} >> $BASH_ENV
+                cd ~/project/terraform/
+                terraform init
+                terraform validate
+                terraform plan -var-file=$TF_WORKSPACE.tfvars
+              # -var container_version=$CIRCLE_BRANCH-$SHORT_HASH
+      apply_terraform:
+        #
+        # Apply the environment terraform configuration. This:
+        #   - Updates per environment infrastructure; and
+        #   - Triggers a deploy of the updated container (if changed)
+        #
+        executor: terraform
+        parameters:
+          workspace:
+            description: Terraform workspace name
+            type: string
+            default: development
+        environment:
+          TF_WORKSPACE: "<<parameters.workspace>>"
+        steps:
+          - checkout
+          - run:
+              name: Apply Environment Terraform
+              command: |
+                export SHORT_HASH=${CIRCLE_SHA1:0:7} >> $BASH_ENV
+                cd ~/project/terraform/
+                terraform init
+                terraform apply -var-file=$TF_WORKSPACE.tfvars --auto-approve
+              # -var container_version=$CIRCLE_BRANCH-$SHORT_HASH
 
 workflows:
   checkout-build-test:
@@ -28,18 +76,34 @@ workflows:
       - build_docker_image:
           requires:
             - build_jar
-      - ignore_ecr_repo
-      - validate_and_plan_terraform:
+      - deployment-spike/validate_and_plan_terraform:
+          name: dev_validate_and_plan_terraform
+          workspace: development
           requires:
-            - ignore_ecr_repo
             - build_docker_image
-      - approve_terraform:
+      - dev_approve_terraform:
           type: approval
           requires:
-            - validate_and_plan_terraform
-      - apply_terraform:
+            - dev_validate_and_plan_terraform
+      - deployment-spike/apply_terraform:
+          name: dev_apply_terraform
+          workspace: development
           requires:
-            - approve_terraform
+            - dev_approve_terraform
+      - deployment-spike/validate_and_plan_terraform:
+          name: test_validate_and_plan_terraform
+          workspace: test
+          requires:
+            - dev_apply_terraform
+      - test_approve_terraform:
+          type: approval
+          requires:
+            - test_validate_and_plan_terraform
+      - deployment-spike/apply_terraform:
+          name: test_apply_terraform
+          workspace: test
+          requires:
+            - test_approve_terraform
 
 jobs:
   build_jar:
@@ -76,33 +140,7 @@ jobs:
             docker push 902837325998.dkr.ecr.eu-west-2.amazonaws.com/laa-ccms-deployment-spike
 
 
-  validate_and_plan_terraform:
-    docker:
-      - image: hashicorp/terraform
-    steps:
-      - checkout
-      - run:
-          name: Validate and plan terraform
-          command: |
-            terraform --version
-            cd ~/project/terraform/
-            terraform init -lock-timeout=300s
-            terraform validate
-            terraform plan
-
-  apply_terraform:
-      docker:
-        - image: hashicorp/terraform
-      steps:
-        - checkout
-        - run:
-            name: Apply terraform
-            command: |
-              cd ~/project/terraform/
-              terraform init -lock-timeout=300s
-              terraform apply -lock-timeout=300s --auto-approve
-
-
+  # Not used
   plan_destroy_terraform:
     docker:
       - image: hashicorp/terraform
@@ -127,14 +165,3 @@ jobs:
             cd ~/project/terraform/
             terraform init -lock-timeout=300s
             terraform destroy --auto-approve
-
-  ignore_ecr_repo:
-    docker:
-      - image: hashicorp/terraform
-    steps:
-      - checkout
-      - run:
-          command: |
-            cd ~/project/terraform/
-            terraform init -lock-timeout=300s
-            terraform state rm 'aws_ecr_repository.ccms_deployment_spike'

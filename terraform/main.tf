@@ -12,7 +12,7 @@ provider "aws" {
   region = var.region
 
   assume_role {
-    role_arn     = "arn:aws:iam::411213865113:role/Terraform"
+    role_arn     = var.environment_terraform_role
   }
 }
 
@@ -37,4 +37,6 @@ module "cluster" {
   providers = { # Assumes the role in the development account
     aws = "aws"
   }
+  vpc_id = var.vpc_id
+  certificate_arn = var.certificate_arn
 }

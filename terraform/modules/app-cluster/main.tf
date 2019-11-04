@@ -18,12 +18,12 @@ data "template_file" "hello_world_app" {
 
 // Need this to get subnet things
 data "aws_cloudformation_stack" "landing_zone" {
-  name = "LAA-${var.environment}"
+  name = "LAA-${terraform.workspace}"
 }
 
 // Need this to get Route53 things that we can add our new name to
 data "aws_cloudformation_stack" "dns" {
-  name = "LAA-dns-${var.environment}"
+  name = "LAA-dns-${terraform.workspace}"
 }
 
 # This is the blueprint for our app

@@ -44,8 +44,7 @@ resource "aws_alb_listener" "front_end" {
   protocol          = "HTTPS"
 
   ssl_policy = "ELBSecurityPolicy-TLS-1-2-2017-01"
-  // TODO parameterise the certificate based on the environment
-  certificate_arn = "arn:aws:acm:eu-west-2:411213865113:certificate/0184743f-c424-4d2e-bd87-f2ac439c38ad"
+  certificate_arn = var.certificate_arn
 
   default_action {
     target_group_arn = aws_alb_target_group.app.id
