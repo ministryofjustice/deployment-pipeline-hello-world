@@ -61,6 +61,10 @@ variable "certificate_arn" {
   description = "The certificate for the ALB Listener"
 }
 
+variable "environment_dns" {
+  description = "The root that the user will access the application from"
+}
+
 locals {
   service = "hello-world"
 

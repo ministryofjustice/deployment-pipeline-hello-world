@@ -44,4 +44,5 @@ module "cluster" {
   }
   vpc_id = var.vpc_id
   certificate_arn = var.certificate_arn
+  environment_dns = var.environment_dns
 }
