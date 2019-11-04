@@ -25,6 +25,11 @@ provider "aws" {
   }
 }
 
+// Need this to get Route53 things that we can add our new name to
+data "aws_cloudformation_stack" "dns" {
+  name = "LAA-dns-${terraform.workspace}"
+}
+
 // This should go in the laa-aws-infrastructure repository
 //resource "aws_ecr_repository" "ccms_deployment_spike" {
 //  name = "laa-ccms-deployment-spike"
