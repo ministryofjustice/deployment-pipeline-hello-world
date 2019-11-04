@@ -37,7 +37,7 @@ orbs:
                 cd ~/project/terraform/
                 terraform init
                 terraform validate
-                terraform plan
+                terraform plan -var-file=$TF_WORKSPACE.tfvars
               # -var container_version=$CIRCLE_BRANCH-$SHORT_HASH
       apply_terraform:
         #
@@ -61,7 +61,7 @@ orbs:
                 export SHORT_HASH=${CIRCLE_SHA1:0:7} >> $BASH_ENV
                 cd ~/project/terraform/
                 terraform init
-                terraform apply --auto-approve
+                terraform apply -var-file=$TF_WORKSPACE.tfvars --auto-approve
               # -var container_version=$CIRCLE_BRANCH-$SHORT_HASH
 
 workflows:
@@ -94,7 +94,7 @@ workflows:
           name: test_validate_and_plan_terraform
           workspace: test
           requires:
-            - dev_approve_terraform
+            - dev_apply_terraform
       - test_approve_terraform:
           type: approval
           requires:
