@@ -37,4 +37,5 @@ module "cluster" {
   providers = { # Assumes the role in the development account
     aws = "aws"
   }
+  vpc_id = var.vpc_id
 }

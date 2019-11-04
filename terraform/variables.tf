@@ -6,3 +6,7 @@ variable "environment_terraform_role" {
   description = "The role to assume when running the terraform"
 }
 
+variable "vpc_id" {
+  description = "VPC ID - will need to vary per environment/account"
+}
+
