@@ -38,4 +38,5 @@ module "cluster" {
     aws = "aws"
   }
   vpc_id = var.vpc_id
+  certificate_arn = var.certificate_arn
 }

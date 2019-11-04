@@ -10,3 +10,7 @@ variable "vpc_id" {
   description = "VPC ID - will need to vary per environment/account"
 }
 
+variable "certificate_arn" {
+  description = "The certificate for the ALB Listener"
+}
+

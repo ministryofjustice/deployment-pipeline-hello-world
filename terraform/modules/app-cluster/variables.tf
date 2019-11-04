@@ -57,6 +57,10 @@ variable "vpc_id" {
   // development
 }
 
+variable "certificate_arn" {
+  description = "The certificate for the ALB Listener"
+}
+
 locals {
   service = "hello-world"
 
