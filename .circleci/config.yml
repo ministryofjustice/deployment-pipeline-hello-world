@@ -76,28 +76,25 @@ workflows:
       - build_docker_image:
           requires:
             - build_jar
-#      - deployment-spike/validate_and_plan_terraform:
-#          name: dev_validate_and_plan_terraform
-#          workspace: development
-#          requires:
-#            - build_docker_image
-#      - dev_approve_terraform:
-#          type: approval
-#          requires:
-#            - dev_validate_and_plan_terraform
-#      - deployment-spike/apply_terraform:
-#          name: dev_apply_terraform
-#          workspace: development
-#          requires:
-#            - dev_approve_terraform
-      - create_test_workspace:
+      - deployment-spike/validate_and_plan_terraform:
+          name: dev_validate_and_plan_terraform
+          workspace: development
           requires:
             - build_docker_image
+      - dev_approve_terraform:
+          type: approval
+          requires:
+            - dev_validate_and_plan_terraform
+      - deployment-spike/apply_terraform:
+          name: dev_apply_terraform
+          workspace: development
+          requires:
+            - dev_approve_terraform
       - deployment-spike/validate_and_plan_terraform:
           name: test_validate_and_plan_terraform
           workspace: test
           requires:
-            - create_test_workspace
+            - dev_apply_terraform
       - test_approve_terraform:
           type: approval
           requires:
@@ -168,14 +165,3 @@ jobs:
             cd ~/project/terraform/
             terraform init -lock-timeout=300s
             terraform destroy --auto-approve
-
-  create_test_workspace:
-    docker:
-      - image: hashicorp/terraform
-    steps:
-      - checkout
-      - run:
-          command: |
-            cd ~/project/terraform/
-            terraform init
-            terraform workspace new test
