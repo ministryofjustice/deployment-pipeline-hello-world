@@ -38,7 +38,7 @@ variable "app_count" {
 }
 
 variable "health_check_path" {
-  default = "/actuator/health"
+  default = "/"
 }
 
 // See https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-cpu-memory-error.html

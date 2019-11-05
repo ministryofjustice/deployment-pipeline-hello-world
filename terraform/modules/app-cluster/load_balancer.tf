@@ -26,7 +26,6 @@ resource "aws_alb_target_group" "app" {
     matcher             = "200"
     timeout             = "3"
     path                = var.health_check_path
-    port                = var.management_port
     unhealthy_threshold = "2"
   }
 
