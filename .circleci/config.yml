@@ -37,8 +37,7 @@ orbs:
                 cd ~/project/terraform/
                 terraform init
                 terraform validate
-                terraform plan -var-file=$TF_WORKSPACE.tfvars
-              # -var container_version=$CIRCLE_BRANCH-$SHORT_HASH
+                terraform plan -var-file=$TF_WORKSPACE.tfvars -var container_version=$SHORT_HASH
       apply_terraform:
         #
         # Apply the environment terraform configuration. This:
@@ -61,8 +60,7 @@ orbs:
                 export SHORT_HASH=${CIRCLE_SHA1:0:7} >> $BASH_ENV
                 cd ~/project/terraform/
                 terraform init
-                terraform apply -var-file=$TF_WORKSPACE.tfvars --auto-approve
-              # -var container_version=$CIRCLE_BRANCH-$SHORT_HASH
+                terraform apply -var-file=$TF_WORKSPACE.tfvars --auto-approve -var container_version=$SHORT_HASH
 
 workflows:
   checkout-build-test:
@@ -137,8 +135,15 @@ jobs:
       - run:
           name: Push container
           command: |
-            docker push 902837325998.dkr.ecr.eu-west-2.amazonaws.com/laa-ccms-deployment-spike
+            export SHORT_HASH=${CIRCLE_SHA1:0:7} >> $BASH_ENV
+            docker tag 902837325998.dkr.ecr.eu-west-2.amazonaws.com/laa-ccms-deployment-spike:latest 902837325998.dkr.ecr.eu-west-2.amazonaws.com/laa-ccms-deployment-spike:$SHORT_HASH
 
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              # We want all of the tags pushed
+              docker push 902837325998.dkr.ecr.eu-west-2.amazonaws.com/laa-ccms-deployment-spike
+            else
+              docker push 902837325998.dkr.ecr.eu-west-2.amazonaws.com/laa-ccms-deployment-spike:$SHORT_HASH
+            fi
 
   # Not used
   plan_destroy_terraform:
