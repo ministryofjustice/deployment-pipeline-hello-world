@@ -19,7 +19,7 @@ variable "az_count" {
 
 variable "app_image" {
   description = "Docker image to run in the ECS cluster"
-  default     = "902837325998.dkr.ecr.eu-west-2.amazonaws.com/laa-ccms-deployment-spike:latest"
+  default     = "902837325998.dkr.ecr.eu-west-2.amazonaws.com/laa-ccms-deployment-spike"
 }
 
 variable "app_port" {
@@ -63,6 +63,10 @@ variable "certificate_arn" {
 
 variable "environment_dns" {
   description = "The root that the user will access the application from"
+}
+
+variable "container_version" {
+  default = "latest"
 }
 
 locals {

@@ -18,3 +18,6 @@ variable "environment_dns" {
   description = "The root that the user will access the application from"
 }
 
+variable "container_version" {
+  default = "latest"
+}

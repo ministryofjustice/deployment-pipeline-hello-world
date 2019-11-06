@@ -6,13 +6,14 @@ data "template_file" "hello_world_app" {
   template = file("${path.module}/templates/hello_world.json.tpl")
 
   vars = {
-    service         = local.service
-    app_image       = var.app_image
-    app_port        = var.app_port
-    fargate_cpu     = var.fargate_cpu
-    fargate_memory  = var.fargate_memory
-    aws_region      = var.region
-    management_port = var.management_port
+    service           = local.service
+    app_image         = var.app_image
+    app_port          = var.app_port
+    fargate_cpu       = var.fargate_cpu
+    fargate_memory    = var.fargate_memory
+    aws_region        = var.region
+    management_port   = var.management_port
+    container_version = var.container_version
   }
 }
 
