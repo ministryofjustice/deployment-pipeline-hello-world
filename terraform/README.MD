@@ -10,7 +10,15 @@ Configure your AWS CLI install as per [the Identity Access Management Confluence
 `aws-vault add laa-shared-services`
 
 This configures aws-vault to contain the details needed to interact with terraform (namely MFA session management).
- 
+
+Initiate Terraform with:
+
+`aws-vault exec laa-shared-services-lz -- terraform init`
+
+Switch to the desired workspace with:
+
+`aws-vault exec laa-shared-services-lz -- terraform workspace select development`
+
 Then you should be able to run terraform, similar to:
 
 `aws-vault exec laa-shared-services-lz -- terraform plan`
