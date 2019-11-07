@@ -68,7 +68,7 @@ The main difference between the two is that `integration` uses a unique terrafor
 
 The minimal `path-to-live` workflow is to deploy to `staging` and then, if the smoke tests pass, to `production`. For an ideal app where we are confident in our automated tests, and we can deploy without downtime, this should be fully automated, so a developer simply needs to merge the PR and then monitor the `path-to-live` workflow in CircleCI.
 
-At the moment there is some downtime when we deploy a change. It is possible to deploy with zero downtime (blue/green deployment) but we haven't yet investigated how to do this with Terraform. We should address this before using this pipeline with a real app.
+There is no downtime to deploy the hello world application, as Terraform creates a new task definition when the image changes, Fargate waits until the tasks from this new definition are healthly and then directs the load balancer to these task instances.  The old task definition is marked as inactive and the task instances are drained and stopped.  This method relies on the application being stateless, so we would need to ensure the production application is as well if we want zero downtime deployments using this method, or investigate other methods such as blue green deployments.
 
 We may or may not want to move the creation of the ECR resource to the shared [laa-aws-infrastructure](https://github.com/ministryofjustice/laa-aws-infrastructure) repository. Moving it out would mean that if we tear down the infrastracture we wouldn't lose previous builds. We should decide if we actually need to keep these or are happy to lose them.
 
